@@ -91,3 +91,22 @@
     owner: root
     group: root
     mode: 'u=rwx,go=rx'
+
+- name: Create directory .kube to allow access using {{ users_deploy_user }} user
+  become: yes
+  file:
+    path: ~{{ users_deploy_user }}/.kube
+    state: directory
+    owner: "{{ users_deploy_user }}"
+    group: "{{ users_deploy_user }}"
+    mode: "u=rwx,g=rx,o="
+
+- name: Copy kube config file to {{ users_deploy_user }} user home directory
+  become: yes
+  copy:
+    src: /etc/rancher/k3s/k3s.yaml
+    dest: ~{{ users_deploy_user }}/.kube/config
+    remote_src: yes
+    owner: "{{ users_deploy_user }}"
+    group: "{{ users_deploy_user }}"
+    mode: "u=rw,g=,o="
